@@ -515,48 +515,7 @@ tr:last-child td { border-bottom: 0; }
     </div>
   </section>
 
-  <section>
-    <h2 class="section-title">Сигнали ідентичності в моделі</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Фіча</th>
-            <th>Важливість</th>
-            <th>Інтерпретація</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><b>email_card_holder_similarity</b></td>
-            <td>0.343936</td>
-            <td>Схожість між email і ім’ям власника картки. Дає сильний сигнал узгодженості цифрової та платіжної ідентичності.</td>
-          </tr>
-          <tr>
-            <td><b>card_holder_gender</b></td>
-            <td>0.132171</td>
-            <td>Сама по собі ця ознака не пояснює ризик напряму. Вона може бути корисною лише в поєднанні з іншими сигналами ідентичності, тому її треба тлумачити обережно.</td>
-          </tr>
-          <tr>
-            <td><b>avg_sequential_card_holder_similarity</b></td>
-            <td>0.122499</td>
-            <td>Середня схожість власника картки між послідовними транзакціями одного користувача. Допомагає помітити нестабільність або підозрілі зміни в платіжній ідентичності.</td>
-          </tr>
-          <tr>
-            <td><b>gender_card_holder_mismatch</b></td>
-            <td>0.111820</td>
-            <td>Невідповідність імені власника картки очікуваній статі користувача є прямим сигналом підозри вже на рівні окремої транзакції.</td>
-          </tr>
-          <tr>
-            <td><b>email_contains_first_name</b></td>
-            <td>0.048624</td>
-            <td>Чи містить email елементи реального імені. Це проста, але корисна перевірка узгодженості ідентичності.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="caption">Примітка: висока важливість фічі в метриках важливості не завжди означає, що її легко пояснити з точки зору бізнесу. Частина ознак працює лише у зв’язці з іншими сигналами.</p>
-  </section>
+  
 
   <section id="impact">
     <h2 class="section-title">Очікуваний бізнес-ефект</h2>
@@ -591,7 +550,6 @@ tr:last-child td { border-bottom: 0; }
   </section>
 
   <footer class="footer">
-    Зроблено у форматі standalone HTML ·
     <a href="https://github.com/mmm29/mono_skelar_test_task" target="_blank" class="footer-link">GitHub Repository</a>
   </footer>
 </div>
