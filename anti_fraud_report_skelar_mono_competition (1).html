@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SKELAR x mono AI Competition | Anti-Fraud Case</title>
+<style>
+:root {
+  --bg: #080808;
+  --bg-2: #111111;
+  --panel: #141414;
+  --panel-2: #1b1b1b;
+  --text: #f5f5f5;
+  --muted: #b6b6b6;
+  --line: rgba(255,255,255,.08);
+  --red: #ff3b30;
+  --red-2: #ff5a52;
+  --red-soft: rgba(255,59,48,.12);
+  --shadow: 0 18px 55px rgba(0,0,0,.42);
+  --max: 1180px;
+  --radius: 24px;
+  --radius-sm: 18px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.55;
+  background:
+    radial-gradient(900px 420px at 15% -10%, rgba(255,59,48,.18), transparent 55%),
+    radial-gradient(900px 520px at 100% 0%, rgba(255,59,48,.10), transparent 45%),
+    linear-gradient(180deg, #050505 0%, #090909 45%, #050505 100%);
+}
+.container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+.hero { padding: 52px 0 28px; }
+.hero-card {
+  position: relative; overflow: hidden;
+  padding: 42px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+  border: 1px solid rgba(255,59,48,.22);
+  box-shadow: var(--shadow);
+}
+.hero-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0 58%, rgba(255,59,48,.10) 75%, transparent 100%);
+  pointer-events: none;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-radius: 999px;
+  border: 1px solid rgba(255,59,48,.28);
+  background: rgba(255,59,48,.08);
+  color: #ffd8d6; font-size: 13px; letter-spacing: .03em;
+}
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--red-2));
+  box-shadow: 0 0 18px rgba(255,59,48,.7);
+}
+h1,h2,h3,h4 { margin: 0 0 12px; line-height: 1.08; }
+h1 {
+  margin-top: 18px;
+  font-size: clamp(40px, 7vw, 74px);
+  letter-spacing: -.05em;
+  max-width: 930px;
+}
+.lead {
+  max-width: 780px;
+  color: var(--muted);
+  font-size: 18px;
+  margin: 0;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1.25fr .95fr; gap: 24px; margin-top: 30px;
+}
+.toc { display: flex; flex-wrap: wrap; gap: 10px; }
+.toc a {
+  text-decoration: none; color: var(--text);
+  padding: 11px 14px; border-radius: 13px;
+  border: 1px solid var(--line); background: rgba(255,255,255,.03);
+  font-size: 14px;
+}
+.toc a:hover { border-color: rgba(255,59,48,.45); background: rgba(255,59,48,.08); }
+.stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+.stat {
+  padding: 18px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+}
+.stat .k {
+  font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .09em;
+  margin-bottom: 8px;
+}
+.stat .v { font-size: 28px; font-weight: 760; letter-spacing: -.03em; }
+section { padding: 26px 0; }
+.section-title { font-size: 34px; letter-spacing: -.04em; }
+.section-sub { color: var(--muted); max-width: 920px; margin: 0 0 18px; }
+.card {
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.017));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.grid-2 { display:grid; grid-template-columns: 1.08fr .92fr; gap: 20px; align-items:start; }
+.grid-3 { display:grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.callout {
+  display:flex; gap:14px; align-items:flex-start;
+  padding: 18px 20px; border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, rgba(255,59,48,.16), rgba(255,59,48,.07));
+  border: 1px solid rgba(255,59,48,.32);
+  color: #ffe4e2;
+}
+.callout .icon { font-size: 20px; line-height: 1; margin-top: 1px; }
+p { margin: 0 0 10px; }
+ul { margin: 10px 0 0; padding-left: 18px; }
+li { margin: 7px 0; }
+
+.process-diagram {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  margin-top: 14px;
+  align-items: stretch;
+}
+.stage {
+  position: relative;
+  min-height: 180px;
+  padding: 20px 18px 18px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+  border: 1px solid rgba(255,255,255,.08);
+}
+.stage::after {
+  content: "→";
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.42);
+  font-size: 24px;
+  z-index: 2;
+}
+.stage:last-child::after { display: none; }
+.stage-num {
+  width: 36px; height: 36px; display:grid; place-items:center;
+  border-radius: 999px; margin-bottom: 12px;
+  background: rgba(255,59,48,.12); border: 1px solid rgba(255,59,48,.28);
+  color: #ffbbb7; font-weight: 800;
+}
+.stage h3 { font-size: 18px; margin-bottom: 8px; }
+.stage p { color: var(--muted); font-size: 14px; }
+.stage .mini {
+  display: inline-block; margin-top: 10px; font-size: 12px; color: #ffd0cd;
+  padding: 6px 9px; border-radius: 999px;
+  border: 1px solid rgba(255,59,48,.24); background: rgba(255,59,48,.08);
+}
+
+.decision-band {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+}
+.decision-logic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.logic-box {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.03);
+}
+.logic-box b {
+  display:block; font-size: 16px; margin-bottom: 6px;
+}
+.logic-box small { color: var(--muted); font-size: 13px; }
+
+.feature-list { display: grid; gap: 14px; }
+.feature-item {
+  display:grid; grid-template-columns: 58px 1fr; gap:16px; align-items:start;
+  padding: 18px; border-radius: 18px;
+  border: 1px solid var(--line); background: rgba(255,255,255,.03);
+}
+.rank {
+  width: 58px; height: 58px; display:grid; place-items:center;
+  border-radius: 18px;
+  font-size: 22px; font-weight: 800;
+  background: linear-gradient(135deg, rgba(255,59,48,.22), rgba(255,59,48,.08));
+  border: 1px solid rgba(255,59,48,.28);
+}
+.table-wrap {
+  overflow: auto;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.025);
+}
+table { width:100%; border-collapse: collapse; }
+th, td {
+  text-align:left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line);
+}
+th {
+  font-size:12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em;
+  background: rgba(255,255,255,.03);
+}
+tr:last-child td { border-bottom: 0; }
+.chart {
+  width: 100%; display:block; border-radius: 18px; background: #fff;
+  border: 1px solid rgba(255,255,255,.09); box-shadow: var(--shadow);
+}
+.caption { color: var(--muted); font-size: 13px; margin-top: 10px; }
+.impact-grid { display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.impact {
+  padding: 20px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03);
+}
+.impact b { display:block; margin-bottom: 6px; font-size: 24px; letter-spacing: -.03em; }
+.small { color: var(--muted); font-size: 14px; }
+.footer { padding: 26px 0 50px; color: var(--muted); font-size: 14px; }
+.accent { color: #ffb6b2; }
+
+@media (max-width: 1020px) {
+  .hero-grid, .grid-2, .grid-3, .decision-band, .impact-grid, .process-diagram, .decision-logic { grid-template-columns: 1fr; }
+  .stage::after {
+    content: "↓"; right: 50%; top: auto; bottom: -18px; transform: translateX(50%);
+  }
+  .hero-card { padding: 28px; }
+}
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background:
+      radial-gradient(900px 420px at 15% -10%, rgba(255,59,48,.18), transparent 55%),
+      radial-gradient(900px 520px at 100% 0%, rgba(255,59,48,.10), transparent 45%),
+      linear-gradient(180deg, #050505 0%, #090909 45%, #050505 100%) !important;
+    color: var(--text) !important;
+  }
+  .container { width: min(calc(100% - 24px), var(--max)); }
+  .hero-card, .card, .callout, .stat, .stage, .logic-box, .feature-item, .impact, .table-wrap {
+    box-shadow: var(--shadow) !important;
+  }
+  section { padding: 16px 0; }
+  @page { size: A4; margin: 10mm; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="hero">
+    <div class="hero-card">
+      <div class="badge"><span class="dot"></span> SKELAR x mono AI Competition · Anti-Fraud Case</div>
+      <h1>Anti-Fraud Strategy for SKELAR x mono AI Competition</h1>
+      <p class="lead">Рішення для детекції шахрайства в онлайн-платежах, побудоване навколо двох ключових принципів: поведінковий ризик користувача та консистентність його цифрової ідентичності. Фокус — знизити fraud losses, зберігши високу конверсію та контрольоване навантаження на manual review.</p>
+
+      <div class="hero-grid">
+        <div>
+          <div class="toc">
+            <a href="#problem">Проблема</a>
+            <a href="#solution">Рішення</a>
+            <a href="#integration">Інтеграція</a>
+            <a href="#top-features">Топ-5 фіч</a>
+            <a href="#impact">Бізнес-ефект</a>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="k">Найсильніша user-фіча</div>
+            <div class="v">rate_error_group_fraud</div>
+          </div>
+          <div class="stat">
+            <div class="k">Найсильніша identity-фіча</div>
+            <div class="v">email_card_holder_similarity</div>
+          </div>
+          <div class="stat">
+            <div class="k">Ключова логіка</div>
+            <div class="v">Identity + Behavior</div>
+          </div>
+          <div class="stat">
+            <div class="k">Рішення</div><div class="v">Fraud Scoring Pipeline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="problem">
+    <h2 class="section-title">Проблема</h2>
+    <p class="section-sub">
+      Платіжний фрод в онлайні створює прямі фінансові втрати, витрати на чарджбеки, навантаження на manual review та погіршує клієнтський досвід.
+      Бізнесу потрібна система, яка не просто знаходить шахрайство, а робить це без зайвого тиску на легітимних користувачів.
+    </p>
+    <div class="callout">
+      <div class="icon">⚠️</div>
+      <div>
+        Головний баланс у задачі: <b>максимізувати точність детекції</b>, але водночас <b>мінімізувати false positives</b>,
+        щоб не ламати конверсію, не збільшувати відтік і не перевантажувати manual review.
+      </div>
+    </div>
+  </section>
+
+  <section id="solution">
+    <h2 class="section-title">Підхід до рішення</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Що ми будуємо</h3>
+        <p>
+          Рішення складається з двох рівнів: <span class="accent"><b>transaction-level</b></span> та <span class="accent"><b>user-level</b></span>. На першому рівні оцінюється ризик окремої транзакції, а на другому — формується цілісний risk profile користувача на основі його історії, активності та узгодженості ідентичності.
+        </p>
+        <ul>
+          <li><b>Preprocessing:</b> очищення, нормалізація та парсинг текстових атрибутів.</li>
+          <li><b>Feature engineering:</b> behavioral, geo, identity-consistency та aggregate features.</li>
+          <li><b>Two-stage scoring:</b> transaction score → user score → бізнес-рішення.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Чому це працює</h3>
+        <ul>
+          <li><b>Behavior signals</b> ловлять аномальну інтенсивність, повторювані помилки та історію підозрілих патернів.</li>
+          <li><b>Identity signals</b> перевіряють узгодженість між email, card holder name, gender та країнами.</li>
+          <li><b>Aggregation layer</b> переводить noisy transaction-level інформацію в більш стабільний user-level risk profile.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="integration">
+    <h2 class="section-title">Інтеграція рішення в бізнес-процеси</h2>
+    <p class="section-sub">
+      Ключова перевага рішення — його вбудовуваність у реальний antifraud workflow: від моменту ініціації платежу до автоматичного рішення, ручної перевірки та подальшого оновлення моделі на основі підтверджених кейсів.
+    </p>
+
+    <div class="card">
+      <h3>Business Process Flow</h3><p class="section-sub" style="margin-top:0;margin-bottom:16px;max-width:none;">Pipeline побудований так, щоб поєднати автоматичний скоринг, контрольовану ручну перевірку та feedback loop для подальшого покращення якості детекції.</p>
+      <div class="process-diagram">
+        <div class="stage">
+          <div class="stage-num">1</div>
+          <h3>Transaction Intake</h3>
+          <p>Платіж заходить у систему разом із user, card, email, geo та технічними атрибутами.</p>
+          <span class="mini">raw input</span>
+        </div>
+        <div class="stage">
+          <div class="stage-num">2</div>
+          <h3>Preprocessing & Identity Checks</h3>
+          <p>Нормалізація імен, gender inference, email/card-holder matching, очищення шуму.</p>
+          <span class="mini">identity layer</span>
+        </div>
+        <div class="stage">
+          <div class="stage-num">3</div>
+          <h3>Feature Engineering</h3>
+          <p>Будуються історичні, behavioral, country mismatch та aggregate-фічі на user-level.</p>
+          <span class="mini">signal generation</span>
+        </div>
+        <div class="stage">
+          <div class="stage-num">4</div>
+          <h3>Model Scoring</h3>
+          <p>Модель оцінює transaction risk і user risk, а потім агрегує їх у фінальний risk profile.</p>
+          <span class="mini">risk scoring</span>
+        </div>
+        <div class="stage">
+          <div class="stage-num">5</div>
+          <h3>Decision & Ops</h3>
+          <p>Платіж або approve, або review, або block; результати йдуть у fraud ops і в feedback loop.</p>
+          <span class="mini">action layer</span>
+        </div>
+      </div>
+
+      <div class="decision-band">
+        <div class="card" style="padding:20px;">
+          <h3>Як це вбудовується в операційний контур</h3>
+          <ul>
+            <li><b>Approve:</b> низький ризик → платіж проходить без додаткового friction.</li>
+            <li><b>Manual Review:</b> середній ризик → кейс потрапляє в чергу antifraud-аналітика.</li>
+            <li><b>Block:</b> високий ризик → операція зупиняється до з'ясування.</li>
+            <li><b>Feedback loop:</b> confirmed fraud / false positive повертаються в дані для покращення правил і retraining.</li>
+          </ul>
+        </div>
+        <div class="decision-logic">
+          <div class="logic-box">
+            <b>Low risk → Approve</b>
+            <small>Максимум конверсії, мінімум непотрібного friction для good users.</small>
+          </div>
+          <div class="logic-box">
+            <b>Mid risk → Review</b>
+            <small>Оптимізація fraud ops: ручна перевірка тільки там, де модель не має високої впевненості.</small>
+          </div>
+          <div class="logic-box">
+            <b>High risk → Block</b>
+            <small>Швидка реакція на повторювані та identity-based патерни шахрайства.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:18px;">
+      <div class="card">
+        <h3>1. До моделі</h3>
+        <p>На цьому етапі система перетворює сирі атрибути на надійні модельні сигнали: очищає шум, нормалізує текстові поля та усуває неоднозначності в ідентичності.</p>
+      </div>
+      <div class="card">
+        <h3>2. У скорингу</h3>
+        <p>У скоринг надходять уже підготовлені behavioral та identity-consistency ознаки, тому модель працює не лише з транзакцією, а й з контекстом користувача та його історією.</p>
+      </div>
+      <div class="card">
+        <h3>3. Після рішення</h3>
+        <p>Після розрахунку risk score кейс маршрутизується в approve / review / block, а результати рішень використовуються для оцінки якості моделі та оновлення antifraud правил.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="top-features">
+    <h2 class="section-title">Топ-5 фіч, що формують user-level risk</h2>
+    <p class="section-sub">
+      Нижче наведено ключові сигнали, які найбільше впливають на user-level оцінку ризику. Саме вони дають моделі змогу відокремлювати випадкову аномалію від системної шахрайської поведінки.
+    </p>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="rank">1</div>
+        <div>
+          <h3>rate_error_group_fraud</h3>
+          <p><b>Суть:</b> частка транзакцій користувача, які потрапляють у fraud/error групи.</p>
+          <p><b>Бізнес-сенс:</b> якщо в історії користувача системно накопичуються підозрілі події, це один із найнадійніших індикаторів high-risk профілю.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="rank">2</div>
+        <div>
+          <h3>ncards</h3>
+          <p><b>Суть:</b> кількість карт, пов’язаних із користувачем.</p>
+          <p><b>Бізнес-сенс:</b> аномально велика кількість карт може бути сигналом card farming, мул-акаунтів або обходу обмежень antifraud-системи.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="rank">3</div>
+        <div>
+          <h3>tx_rate</h3>
+          <p><b>Суть:</b> інтенсивність транзакційної активності.</p>
+          <p><b>Бізнес-сенс:</b> різкі сплески активності часто корелюють із bot-like поведінкою, takeover-сценаріями або тестуванням викрадених карт.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="rank">4</div>
+        <div>
+          <h3>gender_card_holder_mismatch_sum</h3>
+          <p><b>Суть:</b> кількість випадків невідповідності між inferred gender та card holder identity.</p>
+          <p><b>Бізнес-сенс:</b> identity inconsistency — сильний fraud signal. Вона вказує на можливе використання чужих карт або проблемну ідентичність.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="rank">5</div>
+        <div>
+          <h3>sum_probs2</h3>
+          <p><b>Суть:</b> агрегований transaction-level ризик на рівні користувача.</p>
+          <p><b>Бізнес-сенс:</b> дає holistic view ризику, а не оцінку ізольованої транзакції, тому краще підходить для user-level decision making.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Identity-сигнали в моделі</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Фіча</th>
+            <th>Importance</th>
+            <th>Інтерпретація</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>email_card_holder_similarity</b></td>
+            <td>0.343936</td>
+            <td>Схожість між email і card holder name. Дає сигнал узгодженості ідентичності.</td>
+          </tr>
+          <tr>
+            <td><b>card_holder_gender</b></td>
+            <td>0.132171</td>
+            <td>Інформація про гендер як допоміжний identity signal.</td>
+          </tr>
+          <tr>
+            <td><b>card_holder_change_similarity</b></td>
+            <td>0.122499</td>
+            <td>Схожість card holder після змін. Важливо для виявлення suspicious updates.</td>
+          </tr>
+          <tr>
+            <td><b>gender_card_holder_mismatch</b></td>
+            <td>0.111820</td>
+            <td>Невідповідність гендеру та імені. Корисно для account takeover і misuse сценаріїв.</td>
+          </tr>
+          <tr>
+            <td><b>email_contains_first_name</b></td>
+            <td>0.048624</td>
+            <td>Чи містить email елементи реального імені. Проста, але корисна перевірка консистентності.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="impact">
+    <h2 class="section-title">Очікуваний бізнес-ефект</h2>
+    <div class="impact-grid">
+      <div class="impact">
+        <b>↓ Fraud Losses</b>
+        <span class="small">Краща детекція повторюваних та identity-based патернів.</span>
+      </div>
+      <div class="impact">
+        <b>↓ Manual Review Cost</b>
+        <span class="small">Більше впевнених auto-decisions, менше навантаження на команди.</span>
+      </div>
+      <div class="impact">
+        <b>↑ Approval Quality</b>
+        <span class="small">Менше false positives і краще збереження конверсії.</span>
+      </div>
+      <div class="impact">
+        <b>↑ Explainability</b>
+        <span class="small">SHAP та зрозумілі фічі роблять рішення захищуваним перед бізнесом.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="callout">
+      <div class="icon">✅</div>
+      <div>
+        Найсильніший narrative для презентації: <b>модель спирається не лише на raw transaction data, а на поєднання поведінкових та identity-consistency сигналів.</b>
+        Саме це робить рішення ближчим до production-grade antifraud-систем.
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    Зроблено у форматі standalone HTML. Відкрий файл у браузері та експортуй через <b>Print → Save as PDF</b>.
+  </footer>
+</div>
+</body>
+</html>
