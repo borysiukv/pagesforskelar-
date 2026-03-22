@@ -215,6 +215,7 @@ tr:last-child td { border-bottom: 0; }
   width: 100%; display:block; border-radius: 18px; background: #fff;
   border: 1px solid rgba(255,255,255,.09); box-shadow: var(--shadow);
 }
+  
 .caption { color: var(--muted); font-size: 13px; margin-top: 10px; }
 .impact-grid { display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
 .impact {
@@ -224,7 +225,25 @@ tr:last-child td { border-bottom: 0; }
 .small { color: var(--muted); font-size: 14px; }
 .footer { padding: 26px 0 50px; color: var(--muted); font-size: 14px; }
 .accent { color: #ffb6b2; }
+.github-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(135deg, var(--red), var(--red-2));
+  border: 1px solid rgba(255,59,48,.5);
+  transition: all .2s ease;
+}
 
+.github-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255,59,48,.3);
+}
 @media (max-width: 1020px) {
   .hero-grid, .grid-2, .grid-3, .decision-band, .impact-grid, .process-diagram, .decision-logic { grid-template-columns: 1fr; }
   .stage::after {
@@ -282,9 +301,27 @@ tr:last-child td { border-bottom: 0; }
             <div class="k">Ключова логіка</div>
             <div class="v">Identity + Behavior</div>
           </div>
-          <div class="stat">
-            <div class="k">Рішення</div><div class="v">Fraud Scoring Pipeline</div>
-          </div>
+     <div class="stat">
+  <div class="k">Репозиторій</div>
+  <div class="v">
+    <a href="https://github.com/mmm29/mono_skelar_test_task" target="_blank" class="github-btn">
+      <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+        -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+        .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+        0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82
+        a7.65 7.65 0 0 1 2-.27c.68 0 1.36.09 2 .27
+        1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+        .51.56.82 1.27.82 2.15
+        0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+        0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8
+        c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      View on GitHub
+    </a>
+  </div>
+</div>
         </div>
       </div>
     </div>
