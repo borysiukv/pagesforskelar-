@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дашборд термомодернізації 9-поверхівки</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121935;
+      --panel-2: #182142;
+      --text: #eef3ff;
+      --muted: #aeb9d9;
+      --accent: #6ee7b7;
+      --accent-2: #60a5fa;
+      --accent-3: #fbbf24;
+      --accent-4: #f87171;
+      --accent-5: #c084fc;
+      --line: rgba(255,255,255,0.1);
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(96,165,250,0.16), transparent 26%),
+        radial-gradient(circle at top left, rgba(110,231,183,0.12), transparent 22%),
+        linear-gradient(180deg, #08101f 0%, #0b1020 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .hero-card {
+      padding: 28px;
+      min-height: 220px;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(110,231,183,0.12);
+      border: 1px solid rgba(110,231,183,0.25);
+      padding: 8px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.05;
+      margin: 0 0 12px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 820px;
+    }
+
+    .quick-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 104px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .metric .value {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .metric .note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-7 { grid-column: span 7; }
+    .span-6 { grid-column: span 6; }
+    .span-5 { grid-column: span 5; }
+    .span-4 { grid-column: span 4; }
+
+    .card {
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .card .desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sw {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .table-wrap { overflow: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255,255,255,0.02);
+      position: sticky;
+      top: 0;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .strong { font-weight: 700; }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .kpi-chip {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .kpi-chip .k {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .kpi-chip .v {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .chart {
+      width: 100%;
+      min-height: 320px;
+      position: relative;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 12px;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+    .axis { stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+    .gridline { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
+    .tick { fill: var(--muted); font-size: 11px; }
+    .axis-label { fill: var(--muted); font-size: 12px; }
+    .line-1 { fill: none; stroke: var(--accent-2); stroke-width: 3; }
+    .line-2 { fill: none; stroke: var(--accent); stroke-width: 3; }
+    .bar { rx: 10; }
+
+    .finance-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .donut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .donut {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--accent) 0 50%,
+        var(--accent-2) 50% 70%,
+        var(--accent-3) 70% 100%
+      );
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+    .donut::after {
+      content: "24,05 млн грн";
+      width: 148px;
+      height: 148px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(180deg, #0f1732, #0d1530);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      padding: 16px;
+    }
+
+    .gantt {
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .gantt svg { min-width: 980px; }
+
+    .footer-note {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1180px) {
+      .hero, .finance-layout, .kpi-row { grid-template-columns: 1fr; }
+      .span-8, .span-7, .span-6, .span-5, .span-4 { grid-column: span 12; }
+      .quick-metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 720px) {
+      .wrap { padding: 16px; }
+      .quick-metrics, .kpi-row { grid-template-columns: 1fr; }
+      .hero-card { padding: 20px; }
+      .metric .value { font-size: 24px; }
+      .donut { width: 220px; height: 220px; }
+      .donut::after { width: 118px; height: 118px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="panel hero-card">
+        <div class="eyebrow">Термомодернізація • 9-поверховий будинок • Київ</div>
+        <h1>Фінансовий дашборд проєкту<br>з грантовою моделлю, окупністю та таймлайном</h1>
+        <div class="subtitle">
+          Будинок на 216 квартир із загальною площею близько 10 130 м². Базова модель включає утеплення фасаду, даху та цоколя, модернізацію МЗК, ІТП і балансування системи опалення. Сценарій фінансування: 50% грант, 20% міська підтримка, 30% внесок ОСББ/кредит.
+        </div>
+      </div>
+      <div class="panel quick-metrics">
+        <div class="metric">
+          <div class="label">Загальний бюджет</div>
+          <div class="value">24,05 млн грн</div>
+          <div class="note">Повний CAPEX із резервом</div>
+        </div>
+        <div class="metric">
+          <div class="label">Річна економія</div>
+          <div class="value">1,42 млн грн</div>
+          <div class="note">За тарифу 1 800 грн/Гкал</div>
+        </div>
+        <div class="metric">
+          <div class="label">Скорочення споживання</div>
+          <div class="value">−788 Гкал/рік</div>
+          <div class="note">З 1910 до 1122 Гкал/рік</div>
+        </div>
+        <div class="metric">
+          <div class="label">Окупність / IRR</div>
+          <div class="value">~8 років / 19%</div>
+          <div class="note">Для внеску ОСББ після грантів</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12 card">
+        <h2>Ключові метрики окупності</h2>
+        <div class="desc">Базовий сценарій оцінює фінансову доцільність з урахуванням грантового покриття та щорічного зростання тарифу на тепло на 5%.</div>
+        <div class="kpi-row">
+          <div class="kpi-chip"><div class="k">NPV</div><div class="v">+2,66 млн грн</div></div>
+          <div class="kpi-chip"><div class="k">IRR</div><div class="v">18,9%</div></div>
+          <div class="kpi-chip"><div class="k">Проста окупність</div><div class="v">7,8 року</div></div>
+          <div class="kpi-chip"><div class="k">Дисконтована окупність</div><div class="v">~10 років</div></div>
+        </div>
+      </div>
+
+      <div class="panel span-7 card">
+        <h2>Структура фінансування</h2>
+        <div class="desc">Рекомендована схема з мінімальним навантаженням на мешканців і високою ймовірністю погодження.</div>
+        <div class="finance-layout">
+          <div class="donut-wrap">
+            <div class="donut"></div>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--accent)"></i>Фонд енергоефективності — 50%</span>
+              <span><i class="sw" style="background:var(--accent-2)"></i>Місто — 20%</span>
+              <span><i class="sw" style="background:var(--accent-3)"></i>ОСББ / кредит — 30%</span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Джерело</th>
+                  <th class="num">Частка</th>
+                  <th class="num">Сума</th>
+                  <th>Коментар</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="strong">Фонд енергоефективності</td>
+                  <td class="num">50%</td>
+                  <td class="num">12 025 000 грн</td>
+                  <td>Ключовий грантовий компонент</td>
+                </tr>
+                <tr>
+                  <td class="strong">Міська програма</td>
+                  <td class="num">20%</td>
+                  <td class="num">4 810 000 грн</td>
+                  <td>Співфінансування / компенсація</td>
+                </tr>
+                <tr>
+                  <td class="strong">ОСББ / кредит</td>
+                  <td class="num">30%</td>
+                  <td class="num">7 215 000 грн</td>
+                  <td>Реальний внесок мешканців</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel span-5 card">
+        <h2>Навантаження на ОСББ</h2>
+        <div class="desc">Частина, яку треба профінансувати власними коштами або кредитом.</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Показник</th><th class="num">Значення</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Внесок ОСББ / кредит</td><td class="num">7 215 000 грн</td></tr>
+              <tr><td>На 1 квартиру</td><td class="num">≈ 33 400 грн</td></tr>
+              <tr><td>Орієнтовний платіж/міс</td><td class="num">500–700 грн</td></tr>
+              <tr><td>Економія на 1 квартиру / рік</td><td class="num">≈ 6 500 грн</td></tr>
+              <tr><td>Кредитний термін</td><td class="num">5–7 років</td></tr>
+              <tr><td>Типова ставка</td><td class="num">16–20%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel span-8 card">
+        <h2>Детальний кошторис витрат</h2>
+        <div class="desc">Розбивка за основними пакетами робіт і супутніми витратами.</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Категорія</th>
+                <th>Стаття</th>
+                <th class="num">Сума</th>
+                <th class="num">Частка</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Будівельні</td><td>Утеплення фасаду</td><td class="num">14 000 000</td><td class="num">58,2%</td></tr>
+              <tr><td>Будівельні</td><td>Утеплення даху</td><td class="num">1 500 000</td><td class="num">6,2%</td></tr>
+              <tr><td>Будівельні</td><td>Утеплення підвалу / цоколя</td><td class="num">800 000</td><td class="num">3,3%</td></tr>
+              <tr><td>Будівельні</td><td>Вікна МЗК</td><td class="num">800 000</td><td class="num">3,3%</td></tr>
+              <tr><td>Будівельні</td><td>Двері</td><td class="num">300 000</td><td class="num">1,2%</td></tr>
+              <tr><td>Інженерія</td><td>ІТП</td><td class="num">2 000 000</td><td class="num">8,3%</td></tr>
+              <tr><td>Інженерія</td><td>Балансування системи</td><td class="num">700 000</td><td class="num">2,9%</td></tr>
+              <tr><td>Інженерія</td><td>Терморегулятори</td><td class="num">400 000</td><td class="num">1,7%</td></tr>
+              <tr><td>Супутні</td><td>Енергоаудит</td><td class="num">200 000</td><td class="num">0,8%</td></tr>
+              <tr><td>Супутні</td><td>Проєктування</td><td class="num">800 000</td><td class="num">3,3%</td></tr>
+              <tr><td>Супутні</td><td>Експертиза</td><td class="num">200 000</td><td class="num">0,8%</td></tr>
+              <tr><td>Супутні</td><td>Технагляд</td><td class="num">400 000</td><td class="num">1,7%</td></tr>
+              <tr><td>Супутні</td><td>Авторський нагляд</td><td class="num">150 000</td><td class="num">0,6%</td></tr>
+              <tr><td>Резерв</td><td>Непередбачені витрати</td><td class="num">1 800 000</td><td class="num">7,5%</td></tr>
+              <tr><td class="strong" colspan="2">Разом</td><td class="num strong">24 050 000</td><td class="num strong">100%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel span-4 card">
+        <h2>Структура бюджету</h2>
+        <div class="desc">Основний тиск на бюджет створює фасадне утеплення.</div>
+        <div class="chart">
+          <svg viewBox="0 0 420 340" aria-label="Структура бюджету">
+            <line x1="58" y1="20" x2="58" y2="286" class="axis" />
+            <line x1="58" y1="286" x2="390" y2="286" class="axis" />
+            <line x1="58" y1="70" x2="390" y2="70" class="gridline" />
+            <line x1="58" y1="130" x2="390" y2="130" class="gridline" />
+            <line x1="58" y1="190" x2="390" y2="190" class="gridline" />
+            <line x1="58" y1="250" x2="390" y2="250" class="gridline" />
+            <text x="24" y="290" class="tick">0</text>
+            <text x="12" y="254" class="tick">4</text>
+            <text x="12" y="194" class="tick">8</text>
+            <text x="6" y="134" class="tick">12</text>
+            <text x="6" y="74" class="tick">16 млн</text>
+            <rect class="bar" x="80" y="50" width="48" height="236" fill="var(--accent)" />
+            <rect class="bar" x="150" y="261" width="48" height="25" fill="var(--accent-2)" />
+            <rect class="bar" x="220" y="232" width="48" height="54" fill="var(--accent-3)" />
+            <rect class="bar" x="290" y="257" width="48" height="29" fill="var(--accent-5)" />
+            <text x="82" y="306" class="tick">Фасад</text>
+            <text x="150" y="306" class="tick">Дах</text>
+            <text x="202" y="306" class="tick">ІТП+інж.</text>
+            <text x="286" y="306" class="tick">Резерв</text>
+            <text x="82" y="42" class="tick">14,0</text>
+            <text x="150" y="252" class="tick">1,5</text>
+            <text x="220" y="223" class="tick">3,1</text>
+            <text x="290" y="248" class="tick">1,8</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-6 card">
+        <h2>Енергетичний ефект</h2>
+        <div class="desc">Модель показує суттєве зниження теплового споживання після комплексу заходів.</div>
+        <div class="chart">
+          <svg viewBox="0 0 520 340" aria-label="Енергетичний ефект">
+            <line x1="60" y1="24" x2="60" y2="288" class="axis" />
+            <line x1="60" y1="288" x2="470" y2="288" class="axis" />
+            <line x1="60" y1="82" x2="470" y2="82" class="gridline" />
+            <line x1="60" y1="145" x2="470" y2="145" class="gridline" />
+            <line x1="60" y1="208" x2="470" y2="208" class="gridline" />
+            <text x="18" y="292" class="tick">0</text>
+            <text x="6" y="212" class="tick">600</text>
+            <text x="6" y="149" class="tick">1200</text>
+            <text x="6" y="86" class="tick">1800 Гкал</text>
+            <rect class="bar" x="120" y="36" width="110" height="252" fill="var(--accent-4)" />
+            <rect class="bar" x="300" y="140" width="110" height="148" fill="var(--accent)" />
+            <text x="125" y="312" class="tick">До модернізації</text>
+            <text x="310" y="312" class="tick">Після модернізації</text>
+            <text x="138" y="28" class="tick">1910</text>
+            <text x="325" y="132" class="tick">1122</text>
+            <text x="170" y="120" fill="#fff" font-size="26" font-weight="800">−41%</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-6 card">
+        <h2>Структура тепловтрат до модернізації</h2>
+        <div class="desc">Стіни формують основний резерв економії, тому фасадне утеплення є ключовим заходом.</div>
+        <div class="chart">
+          <svg viewBox="0 0 520 340" aria-label="Структура тепловтрат">
+            <line x1="62" y1="30" x2="62" y2="300" class="axis" />
+            <line x1="62" y1="300" x2="470" y2="300" class="axis" />
+            <line x1="62" y1="90" x2="470" y2="90" class="gridline" />
+            <line x1="62" y1="150" x2="470" y2="150" class="gridline" />
+            <line x1="62" y1="210" x2="470" y2="210" class="gridline" />
+            <text x="12" y="304" class="tick">0</text>
+            <text x="12" y="214" class="tick">300</text>
+            <text x="12" y="154" class="tick">600</text>
+            <text x="12" y="94" class="tick">900 кВт</text>
+            <rect class="bar" x="90" y="281" width="46" height="19" fill="var(--accent-2)" />
+            <rect class="bar" x="156" y="292" width="46" height="8" fill="var(--accent-3)" />
+            <rect class="bar" x="222" y="78" width="46" height="222" fill="var(--accent-4)" />
+            <rect class="bar" x="288" y="272" width="46" height="28" fill="var(--accent-5)" />
+            <rect class="bar" x="354" y="225" width="46" height="75" fill="var(--accent)" />
+            <text x="90" y="318" class="tick">Дах</text>
+            <text x="149" y="318" class="tick">Підл.</text>
+            <text x="214" y="318" class="tick">Стіни</text>
+            <text x="277" y="318" class="tick">Вікна</text>
+            <text x="337" y="318" class="tick">Повітря</text>
+            <text x="87" y="272" class="tick">61,7</text>
+            <text x="150" y="282" class="tick">24,8</text>
+            <text x="222" y="69" class="tick">781,8</text>
+            <text x="286" y="263" class="tick">93,2</text>
+            <text x="350" y="216" class="tick">249,4</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-7 card">
+        <h2>Річний cash flow (для частки ОСББ)</h2>
+        <div class="desc">Вихідний внесок ОСББ: 11 млн грн у моделі окупності. Далі щорічна економія зростає разом із тарифом на тепло.</div>
+        <div class="chart">
+          <svg viewBox="0 0 760 360" aria-label="Cash flow">
+            <line x1="62" y1="34" x2="62" y2="308" class="axis" />
+            <line x1="62" y1="171" x2="720" y2="171" class="axis" />
+            <line x1="62" y1="80" x2="720" y2="80" class="gridline" />
+            <line x1="62" y1="126" x2="720" y2="126" class="gridline" />
+            <line x1="62" y1="216" x2="720" y2="216" class="gridline" />
+            <line x1="62" y1="262" x2="720" y2="262" class="gridline" />
+            <text x="8" y="175" class="tick">0</text>
+            <text x="0" y="84" class="tick">+2,5 млн</text>
+            <text x="0" y="266" class="tick">−2,5 млн</text>
+            <text x="0" y="314" class="tick">−11 млн</text>
+            <polyline class="line-1" points="62,308 106,154 150,151 194,148 238,145 282,141 326,138 370,134 414,130 458,126 502,122 546,117 590,112 634,107 678,101 720,95" />
+            <circle cx="62" cy="308" r="5" fill="var(--accent-4)" />
+            <g fill="var(--accent-2)">
+              <circle cx="106" cy="154" r="4" /><circle cx="150" cy="151" r="4" /><circle cx="194" cy="148" r="4" /><circle cx="238" cy="145" r="4" />
+              <circle cx="282" cy="141" r="4" /><circle cx="326" cy="138" r="4" /><circle cx="370" cy="134" r="4" /><circle cx="414" cy="130" r="4" />
+              <circle cx="458" cy="126" r="4" /><circle cx="502" cy="122" r="4" /><circle cx="546" cy="117" r="4" /><circle cx="590" cy="112" r="4" />
+              <circle cx="634" cy="107" r="4" /><circle cx="678" cy="101" r="4" /><circle cx="720" cy="95" r="4" />
+            </g>
+            <text x="52" y="332" class="tick">0</text>
+            <text x="100" y="332" class="tick">1</text>
+            <text x="145" y="332" class="tick">2</text>
+            <text x="189" y="332" class="tick">3</text>
+            <text x="233" y="332" class="tick">4</text>
+            <text x="277" y="332" class="tick">5</text>
+            <text x="321" y="332" class="tick">6</text>
+            <text x="365" y="332" class="tick">7</text>
+            <text x="409" y="332" class="tick">8</text>
+            <text x="453" y="332" class="tick">9</text>
+            <text x="494" y="332" class="tick">10</text>
+            <text x="538" y="332" class="tick">11</text>
+            <text x="582" y="332" class="tick">12</text>
+            <text x="626" y="332" class="tick">13</text>
+            <text x="670" y="332" class="tick">14</text>
+            <text x="714" y="332" class="tick">15</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-5 card">
+        <h2>Накопичений cash flow</h2>
+        <div class="desc">Графік показує вихід у позитивну зону близько 8–10 року, залежно від дисконту та фактичного тарифу.</div>
+        <div class="chart">
+          <svg viewBox="0 0 520 360" aria-label="Cumulative cash flow">
+            <line x1="58" y1="34" x2="58" y2="308" class="axis" />
+            <line x1="58" y1="232" x2="470" y2="232" class="axis" />
+            <line x1="58" y1="92" x2="470" y2="92" class="gridline" />
+            <line x1="58" y1="162" x2="470" y2="162" class="gridline" />
+            <line x1="58" y1="302" x2="470" y2="302" class="gridline" />
+            <text x="8" y="236" class="tick">0</text>
+            <text x="0" y="166" class="tick">−5 млн</text>
+            <text x="0" y="306" class="tick">−11 млн</text>
+            <text x="0" y="96" class="tick">+5 млн</text>
+            <polyline class="line-2" points="58,302 84,276 110,250 136,224 162,198 188,171 214,143 240,114 266,86 292,57 318,27 344,10 370,6 396,5 422,5 448,5" />
+            <g fill="var(--accent)">
+              <circle cx="58" cy="302" r="4" /><circle cx="84" cy="276" r="4" /><circle cx="110" cy="250" r="4" /><circle cx="136" cy="224" r="4" />
+              <circle cx="162" cy="198" r="4" /><circle cx="188" cy="171" r="4" /><circle cx="214" cy="143" r="4" /><circle cx="240" cy="114" r="4" />
+              <circle cx="266" cy="86" r="4" /><circle cx="292" cy="57" r="4" /><circle cx="318" cy="27" r="4" /><circle cx="344" cy="10" r="4" />
+              <circle cx="370" cy="6" r="4" /><circle cx="396" cy="5" r="4" /><circle cx="422" cy="5" r="4" /><circle cx="448" cy="5" r="4" />
+            </g>
+            <rect x="248" y="64" width="88" height="38" rx="10" fill="rgba(110,231,183,0.12)" stroke="rgba(110,231,183,0.3)" />
+            <text x="260" y="88" fill="var(--text)" font-size="13" font-weight="700">Точка окупності</text>
+            <text x="283" y="103" fill="var(--muted)" font-size="12">8–10 рік</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-12 card">
+        <h2>Сценарії грантового покриття</h2>
+        <div class="desc">Чим більша грантова частка, тим швидше окупність і вища дохідність проєкту для ОСББ.</div>
+        <div class="chart">
+          <svg viewBox="0 0 1180 340" aria-label="Сценарії грантового покриття">
+            <line x1="70" y1="280" x2="1110" y2="280" class="axis" />
+            <line x1="70" y1="40" x2="70" y2="280" class="axis" />
+            <line x1="70" y1="80" x2="1110" y2="80" class="gridline" />
+            <line x1="70" y1="140" x2="1110" y2="140" class="gridline" />
+            <line x1="70" y1="200" x2="1110" y2="200" class="gridline" />
+            <div></div>
+            <text x="20" y="284" class="tick">0</text>
+            <text x="18" y="204" class="tick">10</text>
+            <text x="18" y="144" class="tick">20</text>
+            <text x="18" y="84" class="tick">30%</text>
+            <rect class="bar" x="150" y="184" width="90" height="96" fill="var(--accent-4)" />
+            <rect class="bar" x="300" y="120" width="90" height="160" fill="var(--accent-2)" />
+            <rect class="bar" x="450" y="64" width="90" height="216" fill="var(--accent)" />
+            <rect class="bar" x="680" y="190" width="90" height="90" fill="var(--accent-4)" opacity="0.8" />
+            <rect class="bar" x="830" y="160" width="90" height="120" fill="var(--accent-2)" opacity="0.8" />
+            <rect class="bar" x="980" y="88" width="90" height="192" fill="var(--accent)" opacity="0.8" />
+            <text x="150" y="305" class="tick">40% грант</text>
+            <text x="300" y="305" class="tick">50% грант</text>
+            <text x="450" y="305" class="tick">70% грант</text>
+            <text x="690" y="305" class="tick">IRR</text>
+            <text x="840" y="305" class="tick">NPV</text>
+            <text x="970" y="305" class="tick">Окупність</text>
+            <text x="164" y="176" class="tick">12%</text>
+            <text x="314" y="112" class="tick">19%</text>
+            <text x="462" y="56" class="tick">30%+</text>
+            <text x="685" y="182" class="tick">~10%</text>
+            <text x="832" y="152" class="tick">+2,6 млн</text>
+            <text x="992" y="80" class="tick">4–6 р.</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel span-12 card">
+        <h2>Таймлайн проєкту — Gantt chart</h2>
+        <div class="desc">Реалістичний шлях від підготовки до моніторингу. Загальна тривалість: 18 місяців.</div>
+        <div class="gantt">
+          <svg viewBox="0 0 1180 430" aria-label="Gantt chart">
+            <rect x="0" y="0" width="1180" height="430" fill="transparent" />
+            <g>
+              <text x="20" y="58" class="tick">Етап</text>
+              <text x="260" y="58" class="tick">М1</text><text x="320" y="58" class="tick">М2</text><text x="380" y="58" class="tick">М3</text><text x="440" y="58" class="tick">М4</text>
+              <text x="500" y="58" class="tick">М5</text><text x="560" y="58" class="tick">М6</text><text x="620" y="58" class="tick">М7</text><text x="680" y="58" class="tick">М8</text>
+              <text x="740" y="58" class="tick">М9</text><text x="795" y="58" class="tick">М10</text><text x="860" y="58" class="tick">М11</text><text x="920" y="58" class="tick">М12</text>
+              <text x="980" y="58" class="tick">М13</text><text x="1040" y="58" class="tick">М14</text><text x="1100" y="58" class="tick">М15-18</text>
+            </g>
+            <g stroke="rgba(255,255,255,0.08)">
+              <line x1="240" y1="70" x2="240" y2="400" />
+              <line x1="300" y1="70" x2="300" y2="400" />
+              <line x1="360" y1="70" x2="360" y2="400" />
+              <line x1="420" y1="70" x2="420" y2="400" />
+              <line x1="480" y1="70" x2="480" y2="400" />
+              <line x1="540" y1="70" x2="540" y2="400" />
+              <line x1="600" y1="70" x2="600" y2="400" />
+              <line x1="660" y1="70" x2="660" y2="400" />
+              <line x1="720" y1="70" x2="720" y2="400" />
+              <line x1="780" y1="70" x2="780" y2="400" />
+              <line x1="840" y1="70" x2="840" y2="400" />
+              <line x1="900" y1="70" x2="900" y2="400" />
+              <line x1="960" y1="70" x2="960" y2="400" />
+              <line x1="1020" y1="70" x2="1020" y2="400" />
+              <line x1="1080" y1="70" x2="1080" y2="400" />
+            </g>
+            <g>
+              <text x="20" y="105" fill="var(--text)" font-size="14">1. ОСББ, рішення мешканців</text>
+              <rect x="240" y="85" width="120" height="26" rx="10" fill="var(--accent-2)" />
+
+              <text x="20" y="155" fill="var(--text)" font-size="14">2. Енергоаудит та обстеження</text>
+              <rect x="300" y="135" width="120" height="26" rx="10" fill="var(--accent)" />
+
+              <text x="20" y="205" fill="var(--text)" font-size="14">3. Проєктування та експертиза</text>
+              <rect x="360" y="185" width="180" height="26" rx="10" fill="var(--accent-3)" />
+
+              <text x="20" y="255" fill="var(--text)" font-size="14">4. Подання на грант / фінансування</text>
+              <rect x="480" y="235" width="180" height="26" rx="10" fill="var(--accent-5)" />
+
+              <text x="20" y="305" fill="var(--text)" font-size="14">5. Закупівлі та укладання договорів</text>
+              <rect x="660" y="285" width="120" height="26" rx="10" fill="var(--accent-2)" />
+
+              <text x="20" y="355" fill="var(--text)" font-size="14">6. Реалізація робіт</text>
+              <rect x="720" y="335" width="300" height="26" rx="10" fill="var(--accent-4)" />
+
+              <text x="20" y="405" fill="var(--text)" font-size="14">7. Верифікація та моніторинг ефекту</text>
+              <rect x="960" y="385" width="180" height="26" rx="10" fill="var(--accent)" />
+            </g>
+          </svg>
+        </div>
+        <div class="footer-note">Логіка запуску: підготовка (1–4 міс), проєктування (3–6 міс), фінансування (5–8 міс), виконання (9–14 міс), моніторинг і верифікація (13–18 міс).</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
