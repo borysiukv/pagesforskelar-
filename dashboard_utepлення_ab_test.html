@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Дашборд: з утепленням / без утеплення</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #121a31;
+    --panel-soft: #18223f;
+    --line: rgba(255,255,255,0.12);
+    --text: #eef3ff;
+    --muted: #aebad8;
+    --accent: #5ea1ff;
+    --accent2: #7fd1a7;
+    --accent3: #f6b26b;
+    --danger: #ff8a80;
+    --ok: #92e6a7;
+    --shadow: 0 20px 40px rgba(0,0,0,.28);
+    --radius: 22px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at top right, rgba(94,161,255,.16), transparent 22%),
+      radial-gradient(circle at top left, rgba(127,209,167,.14), transparent 18%),
+      linear-gradient(180deg, #09101f, #0d1430 38%, #0a1020 100%);
+  }
+  .wrap {
+    width: min(1600px, calc(100% - 32px));
+    margin: 20px auto 40px;
+  }
+  .hero {
+    background: linear-gradient(135deg, rgba(94,161,255,.18), rgba(127,209,167,.08));
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 20px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+  }
+  .hero p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 1100px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .top-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .pill {
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 16px;
+  }
+  .pill .k {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .pill .v {
+    margin-top: 6px;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .ab {
+    display: grid;
+    grid-template-columns: 1fr 2px 1fr;
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 18px;
+  }
+  .divider {
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,.45), transparent);
+    border-radius: 999px;
+  }
+  .side {
+    background: rgba(18,26,49,.88);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+  .side.good {
+    box-shadow: 0 20px 50px rgba(127,209,167,.08);
+  }
+  .side.bad {
+    box-shadow: 0 20px 50px rgba(246,178,107,.09);
+  }
+  .side h2 {
+    margin: 4px 0 0;
+    font-size: 28px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px 0 14px;
+  }
+  .kpi {
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px;
+  }
+  .kpi .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .kpi .value {
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 750;
+  }
+  .kpi .hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 14px;
+  }
+  .panel {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 14px;
+    overflow: hidden;
+  }
+  .panel h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    letter-spacing: .01em;
+  }
+  .legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .legend span::before {
+    content: "";
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 999px;
+    margin-right: 6px;
+    vertical-align: middle;
+    background: currentColor;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  th, td {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding: 8px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    color: #dbe5ff;
+    font-weight: 650;
+    background: rgba(255,255,255,.03);
+    position: sticky;
+    top: 0;
+  }
+  td.num, th.num { text-align: right; }
+  .table-wrap {
+    max-height: 390px;
+    overflow: auto;
+    border-radius: 14px;
+  }
+  .footer-note {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+  .section {
+    background: rgba(18,26,49,.88);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .section h2 {
+    margin: 4px 0 14px;
+    font-size: 26px;
+  }
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .section-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .big-table {
+    margin-top: 10px;
+  }
+  .good-text { color: var(--ok); }
+  .bad-text { color: var(--danger); }
+  .mono { font-variant-numeric: tabular-nums; }
+  .tag {
+    display: inline-block;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-right: 8px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: rgba(255,255,255,.04);
+  }
+  canvas, svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  @media (max-width: 1200px) {
+    .ab { grid-template-columns: 1fr; }
+    .divider { display:none; }
+    .grid2, .section-grid, .section-grid-3, .kpis, .top-stats { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .grid2, .section-grid, .section-grid-3, .kpis, .top-stats { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .side h2, .section h2 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>Техніко-економічний дашборд опалення: <span class="good-text">з утепленням</span> vs <span class="bad-text">без утеплення</span></h1>
+    <p>
+      Екран поділено вертикально як A/B-порівняння: зліва сценарій після утеплення, справа — поточний стан без утеплення.
+      Нижче повторено зведені графіки для прямого порівняння, а в кінці додано технічні дані обладнання, графік heating capacity
+      та таблицю мінімальних норм утеплення з файлів.
+    </p>
+    <div class="top-stats">
+      <div class="pill"><div class="k">Зменшення пікового навантаження</div><div class="v mono">40.6%</div></div>
+      <div class="pill"><div class="k">Менше споживання електроенергії</div><div class="v mono">779 кВт·год</div></div>
+      <div class="pill"><div class="k">Економія за сезон</div><div class="v mono">3366 грн</div></div>
+      <div class="pill"><div class="k">Зниження сезонної вартості</div><div class="v mono">40.6%</div></div>
+    </div>
+  </section>
+
+  <section class="ab">
+    <div class="side good">
+      <span class="tag">Сценарій A</span><span class="tag">Після утеплення</span>
+      <h2>З утепленням</h2>
+      <div class="sub">Нижче зібрані всі наявні числові дані зі звіту, графіків втрат та експлуатаційних витрат.</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="label">Пікове навантаження</div><div class="value mono">1.61 кВт</div><div class="hint">при -22 °C</div></div>
+        <div class="kpi"><div class="label">Споживання ТН</div><div class="value mono">1140 кВт·год</div><div class="hint">за сезон</div></div>
+        <div class="kpi"><div class="label">Вартість ТН</div><div class="value mono">4 925 грн</div><div class="hint">за сезон</div></div>
+        <div class="kpi"><div class="label">Середній COP</div><div class="value mono">3.20</div><div class="hint">опалювальний період</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Графік навантаження по температурних інтервалах</h3>
+          <svg id="line-with"></svg>
+          <div class="legend"><span style="color:#7fd1a7">Необхідне навантаження, кВт</span><span style="color:#5ea1ff">Години стояння температур</span></div>
+        </div>
+        <div class="panel">
+          <h3>Структура тепловтрат після утеплення</h3>
+          <svg id="pie-with"></svg>
+          <div class="footer-note">Домінують стіни та вентиляція / інфільтрація. Саме тому після утеплення частка вентиляційних втрат стає відносно більшою.</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:14px;">
+        <div class="panel">
+          <h3>Вартість експлуатації</h3>
+          <svg id="cost-with"></svg>
+          <div class="footer-note">Електрообігрівач: 15 741 грн. Тепловий насос: 4 925 грн. Економія: 10 816 грн.</div>
+        </div>
+        <div class="panel">
+          <h3>Таблиця розрахунку по інтервалах</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Інтервал, °C</th><th class="num">Години</th><th class="num">Навантаження, кВт</th><th class="num">Розрах. енергія, кВт·год</th></tr>
+              </thead>
+              <tbody id="table-with"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="side bad">
+      <span class="tag">Сценарій B</span><span class="tag">Поточний стан</span>
+      <h2>Без утеплення</h2>
+      <div class="sub">Той самий формат, щоб зміни було видно одразу без перемикання між сторінками та окремими PDF.</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="label">Пікове навантаження</div><div class="value mono">2.71 кВт</div><div class="hint">при -22 °C</div></div>
+        <div class="kpi"><div class="label">Споживання ТН</div><div class="value mono">1919 кВт·год</div><div class="hint">за сезон</div></div>
+        <div class="kpi"><div class="label">Вартість ТН</div><div class="value mono">8 291 грн</div><div class="hint">за сезон</div></div>
+        <div class="kpi"><div class="label">Середній COP</div><div class="value mono">3.20</div><div class="hint">опалювальний період</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Графік навантаження по температурних інтервалах</h3>
+          <svg id="line-without"></svg>
+          <div class="legend"><span style="color:#f6b26b">Необхідне навантаження, кВт</span><span style="color:#5ea1ff">Години стояння температур</span></div>
+        </div>
+        <div class="panel">
+          <h3>Структура тепловтрат без утеплення</h3>
+          <svg id="pie-without"></svg>
+          <div class="footer-note">До утеплення найбільші втрати припадають на зовнішні стіни. Це чітко видно і на круговій діаграмі, і в абсолютних значеннях.</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:14px;">
+        <div class="panel">
+          <h3>Вартість експлуатації</h3>
+          <svg id="cost-without"></svg>
+          <div class="footer-note">Електрообігрівач: 26 496 грн. Тепловий насос: 8 291 грн. Економія: 18 205 грн.</div>
+        </div>
+        <div class="panel">
+          <h3>Таблиця розрахунку по інтервалах</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Інтервал, °C</th><th class="num">Години</th><th class="num">Навантаження, кВт</th><th class="num">Розрах. енергія, кВт·год</th></tr>
+              </thead>
+              <tbody id="table-without"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Повторені нижче зведені графіки</h2>
+    <div class="section-grid">
+      <div class="panel">
+        <h3>Порівняння навантаження по температурі</h3>
+        <svg id="line-compare"></svg>
+      </div>
+      <div class="panel">
+        <h3>Порівняння сезонного споживання та вартості</h3>
+        <svg id="bars-summary"></svg>
+        <div class="footer-note">В одному графіку: споживання тепловим насосом, еквівалент електрообігрівача та сезонна вартість для обох сценаріїв.</div>
+      </div>
+    </div>
+
+    <div class="section-grid" style="margin-top:14px;">
+      <div class="panel">
+        <h3>Порівняння структури тепловтрат</h3>
+        <svg id="losses-compare"></svg>
+      </div>
+      <div class="panel">
+        <h3>Порівняння розрахункової енергії по інтервалах</h3>
+        <svg id="interval-energy-compare"></svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Усі числові дані з розрахунків</h2>
+    <div class="section-grid">
+      <div class="panel">
+        <h3>Порівняльна таблиця сценаріїв</h3>
+        <table class="big-table">
+          <thead><tr><th>Показник</th><th class="num">З утепленням</th><th class="num">Без утеплення</th><th class="num">Різниця</th></tr></thead>
+          <tbody>
+            <tr><td>Пікове навантаження, кВт</td><td class="num mono">1.61</td><td class="num mono">2.71</td><td class="num mono">-1.10</td></tr>
+            <tr><td>Сезонне споживання ТН, кВт·год</td><td class="num mono">1140</td><td class="num mono">1919</td><td class="num mono">-779</td></tr>
+            <tr><td>Сезонна вартість ТН, грн</td><td class="num mono">4 925</td><td class="num mono">8 291</td><td class="num mono">-3 366</td></tr>
+            <tr><td>Еквівалентне споживання електрообігрівача, кВт·год</td><td class="num mono">3644</td><td class="num mono">6133</td><td class="num mono">-2489</td></tr>
+            <tr><td>Сезонна вартість електрообігрівача, грн</td><td class="num mono">15 741</td><td class="num mono">26 496</td><td class="num mono">-10 755</td></tr>
+            <tr><td>Економія ТН відносно електрообігрівача, грн</td><td class="num mono">10 816</td><td class="num mono">18 205</td><td class="num mono">—</td></tr>
+            <tr><td>Середній COP</td><td class="num mono">3.20</td><td class="num mono">3.20</td><td class="num mono">0.00</td></tr>
+            <tr><td>Тариф електроенергії, грн/кВт·год</td><td class="num mono">4.32</td><td class="num mono">4.32</td><td class="num mono">0.00</td></tr>
+            <tr><td>Внутрішня температура, °C</td><td class="num mono">20</td><td class="num mono">20</td><td class="num mono">0</td></tr>
+            <tr><td>Температура найхолоднішої п'ятиденки, °C</td><td class="num mono">-22</td><td class="num mono">-22</td><td class="num mono">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>Тепловтрати по елементах, кВт</h3>
+        <table class="big-table">
+          <thead><tr><th>Елемент</th><th class="num">З утепленням</th><th class="num">Без утеплення</th><th class="num">Зменшення</th></tr></thead>
+          <tbody id="loss-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Технічні дані обладнання</h2>
+    <div class="section-grid">
+      <div class="panel">
+        <h3>Технічні характеристики моделей Cooper&amp;Hunter</h3>
+        <div class="table-wrap" style="max-height:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Модель</th>
+                <th class="num">Холод, кВт</th>
+                <th class="num">Тепло, кВт</th>
+                <th class="num">Спож. холод, кВт</th>
+                <th class="num">Спож. тепло, кВт</th>
+                <th class="num">SEER</th>
+                <th class="num">SCOP</th>
+              </tr>
+            </thead>
+            <tbody id="tech-specs"></tbody>
+          </table>
+        </div>
+        <div class="footer-note">У таблиці показані номінальні значення та сезонні коефіцієнти енергоефективності з наданого технічного зображення.</div>
+      </div>
+      <div class="panel">
+        <h3>Heating capacity ratio vs outdoor temperature</h3>
+        <svg id="tech-curve"></svg>
+        <div class="footer-note">Точки для цього графіка відтворені за наданим зображенням, щоб мати єдину HTML-версію з усіма графіками в одному файлі.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Мінімальні норми по утепленню</h2>
+    <div class="panel">
+      <h3>Таблиця вимог ДБН та прийнятих товщин утеплювача</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Тип огородження</th>
+            <th class="num">Поточний R</th>
+            <th class="num">Після утеплення R</th>
+            <th class="num">Необхідна товщина</th>
+            <th class="num">Норма</th>
+            <th class="num">Допуск 75% від норми</th>
+          </tr>
+        </thead>
+        <tbody id="norms-table"></tbody>
+      </table>
+      <div class="footer-note">Для старих будівель допускається зменшення до 75% від норми за умови виконання вимог п. 5.1 ДБН.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const data = {"hours": [9, 26, 44, 70, 105, 131, 166, 237, 301, 403, 526, 833, 561, 456, 456, 491], "intervals": ["-22…-20.1", "-20…-18.1", "-18…-16.1", "-16…-14.1", "-14…-12.1", "-12…-10.1", "-10…-8.1", "-8…-6.1", "-6…-4.1", "-4…-2.1", "-2…-0.1", "0…1.9", "2…3.9", "4…5.9", "6…7.9", "8…9.9"], "midpoints": [-21, -19, -17, -15, -13, -11, -9, -7, -5, -3, -1, 1, 3, 5, 7, 9], "withIns": {"name": "З утепленням", "peak_kw": 1.61, "consumed_kwh": 1140, "season_cost_uah": 4925, "electric_heater_kwh": 3644, "electric_heater_cost_uah": 15741, "savings_uah": 10816, "avg_cop": 3.2, "hourly_load_kw": [1.61, 1.5, 1.42, 1.34, 1.27, 1.19, 1.11, 1.04, 0.96, 0.88, 0.77, 0.73, 0.65, 0.58, 0.5, 0.42], "losses_kw": {"Дах": 10.98, "Підлога": 4.39, "Стіни": 361.62, "Вікна": 62.13, "Сходова клітина": 10.95, "Вентиляція / інфільтрація": 249.44}, "interval_energy_kwh": [14.49, 39.0, 62.48, 93.8, 133.35, 155.89, 184.26, 246.48, 288.96, 354.64, 405.02, 608.09, 364.65, 264.48, 228.0, 206.22]}, "withoutIns": {"name": "Без утеплення", "peak_kw": 2.71, "consumed_kwh": 1919, "season_cost_uah": 8291, "electric_heater_kwh": 6133, "electric_heater_cost_uah": 26496, "savings_uah": 18205, "avg_cop": 3.2, "hourly_load_kw": [2.71, 2.52, 2.39, 2.26, 2.13, 2.0, 1.87, 1.74, 1.61, 1.48, 1.29, 1.23, 1.1, 0.97, 0.84, 0.71], "losses_kw": {"Дах": 61.71, "Підлога": 24.76, "Стіни": 781.84, "Вікна": 93.19, "Сходова клітина": 32.93, "Вентиляція / інфільтрація": 249.44}, "interval_energy_kwh": [24.39, 65.52, 105.16, 158.2, 223.65, 262.0, 310.42, 412.38, 484.61, 596.44, 678.54, 1024.59, 617.1, 442.32, 383.04, 348.61]}, "techSpecs": [{"model": "CH-S09FTXLA2-NG", "cool_cap": 2.7, "cool_range": "0.80–3.80", "heat_cap": 3.0, "heat_range": "0.90–4.25", "cool_power": 0.69, "cool_power_range": "0.10–1.30", "heat_power": 0.7, "heat_power_range": "0.15–1.40", "seer": 7.5, "seer_class": "A++", "scop": 5.3, "scop_class": "A+++"}, {"model": "CH-S12FTXLA2-NG", "cool_cap": 3.51, "cool_range": "0.90–4.40", "heat_cap": 3.81, "heat_range": "0.90–4.70", "cool_power": 0.96, "cool_power_range": "0.22–1.40", "heat_power": 0.95, "heat_power_range": "0.22–1.55", "seer": 7.1, "seer_class": "A++", "scop": 5.2, "scop_class": "A+++"}, {"model": "CH-S18FTXLA2-NG", "cool_cap": 5.2, "cool_range": "1.00–6.10", "heat_cap": 5.6, "heat_range": "1.10–6.60", "cool_power": 1.58, "cool_power_range": "0.10–2.35", "heat_power": 1.44, "heat_power_range": "0.18–2.40", "seer": 7.1, "seer_class": "A++", "scop": 5.7, "scop_class": "A+++"}, {"model": "CH-S24FTXLA2-NG", "cool_cap": 7.1, "cool_range": "2.00–8.85", "heat_cap": 7.8, "heat_range": "1.80–9.45", "cool_power": 2.03, "cool_power_range": "0.45–2.90", "heat_power": 2.0, "heat_power_range": "0.35–3.00", "seer": 7.0, "seer_class": "A++", "scop": 5.4, "scop_class": "A+++"}], "insulationNorms": [["Дах", 0.962, 5.406, "0.20 м", 7.0, 5.25], ["Підлога 1-го поверху", 0.719, 4.052, "0.15 м", 5.0, 3.75], ["Тришарова зовнішня стінова панель (0.35 м)", 1.912, 4.135, "0.10 м", 4.0, 3.0], ["Залізобетонні ребра вікон сходової клітини", 0.33, 3.663, "0.15 м", 4.0, 3.0], ["Вікна металопластикові", 0.6, 0.9, "заміна", 0.9, "—"], ["Вікна дерев'яні", 0.39, 0.9, "заміна", 0.9, "—"], ["Двері металеві", 0.25, 0.7, "заміна", 0.7, "При наявності тамбура"]], "techCurve": {"temps": [-22, -15, -10, -7, 0, 2, 7, 15, 18, 21, 24], "k09_12": [58, 76, 86, 89, 93, 95, 100, 125, 127, 130, 132], "k18": [55, 74, 85, 88, 92, 95, 100, 120, 127, 129, 131], "k24": [79, 83, 85, 104, 99, 99, 100, 107, 127, 130, 131]}, "summary": {"reduction_peak_pct": 40.6, "reduction_consumption_pct": 40.6, "reduction_cost_pct": 40.6, "delta_cost_uah": 3366, "delta_consumption_kwh": 779}};
+
+function fmt(n, d=2) {
+  return new Intl.NumberFormat('uk-UA', {maximumFractionDigits:d, minimumFractionDigits:d}).format(n);
+}
+function fmt0(n) {
+  return new Intl.NumberFormat('uk-UA', {maximumFractionDigits:0}).format(n);
+}
+
+function renderIntervalTable(tbodyId, scenario) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  for (let i = 0; i < data.intervals.length; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${data.intervals[i]}</td>
+      <td class="num mono">${fmt0(data.hours[i])}</td>
+      <td class="num mono">${fmt(scenario.hourly_load_kw[i])}</td>
+      <td class="num mono">${fmt(scenario.interval_energy_kwh[i])}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderLossTable() {
+  const tbody = document.getElementById('loss-table');
+  const keys = Object.keys(data.withIns.losses_kw);
+  tbody.innerHTML = keys.map(k => {
+    const a = data.withIns.losses_kw[k];
+    const b = data.withoutIns.losses_kw[k];
+    return `<tr>
+      <td>${k}</td>
+      <td class="num mono">${fmt(a)}</td>
+      <td class="num mono">${fmt(b)}</td>
+      <td class="num mono">${fmt(b-a)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTechSpecs() {
+  const tbody = document.getElementById('tech-specs');
+  tbody.innerHTML = data.techSpecs.map(r => `
+    <tr>
+      <td>${r.model}</td>
+      <td class="num mono">${fmt(r.cool_cap)} <span class="muted small">(${r.cool_range})</span></td>
+      <td class="num mono">${fmt(r.heat_cap)} <span class="muted small">(${r.heat_range})</span></td>
+      <td class="num mono">${fmt(r.cool_power)} <span class="muted small">(${r.cool_power_range})</span></td>
+      <td class="num mono">${fmt(r.heat_power)} <span class="muted small">(${r.heat_power_range})</span></td>
+      <td class="num mono">${fmt(r.seer,1)} <span class="muted small">${r.seer_class}</span></td>
+      <td class="num mono">${fmt(r.scop,1)} <span class="muted small">${r.scop_class}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderNorms() {
+  const tbody = document.getElementById('norms-table');
+  tbody.innerHTML = data.insulationNorms.map(r => `
+    <tr>
+      <td>${r[0]}</td>
+      <td class="num mono">${typeof r[1] === 'number' ? fmt(r[1],3) : r[1]}</td>
+      <td class="num mono">${typeof r[2] === 'number' ? fmt(r[2],3) : r[2]}</td>
+      <td class="num mono">${r[3]}</td>
+      <td class="num mono">${typeof r[4] === 'number' ? fmt(r[4],2) : r[4]}</td>
+      <td class="num mono">${typeof r[5] === 'number' ? fmt(r[5],2) : r[5]}</td>
+    </tr>
+  `).join('');
+}
+
+function svgSize(el) {
+  const w = el.clientWidth || 600;
+  const h = Math.max(260, Math.round(w * 0.52));
+  el.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  el.innerHTML = '';
+  return {w,h};
+}
+function addText(svg, x, y, text, opts={}) {
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('x', x); t.setAttribute('y', y);
+  t.setAttribute('fill', opts.fill || '#aebad8');
+  t.setAttribute('font-size', opts.size || 12);
+  t.setAttribute('font-weight', opts.weight || 500);
+  t.setAttribute('text-anchor', opts.anchor || 'start');
+  if (opts.rotate) t.setAttribute('transform', `rotate(${opts.rotate} ${x} ${y})`);
+  t.textContent = text;
+  svg.appendChild(t);
+  return t;
+}
+function addLine(svg, x1,y1,x2,y2, stroke='rgba(255,255,255,.12)', width=1, dash='') {
+  const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+  l.setAttribute('stroke', stroke); l.setAttribute('stroke-width', width);
+  if (dash) l.setAttribute('stroke-dasharray', dash);
+  svg.appendChild(l);
+  return l;
+}
+function addRect(svg, x,y,w,h, fill, rx=8) {
+  const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', w); r.setAttribute('height', h);
+  r.setAttribute('fill', fill); r.setAttribute('rx', rx); r.setAttribute('ry', rx);
+  svg.appendChild(r);
+  return r;
+}
+function addCircle(svg, cx,cy,r, fill) {
+  const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r); c.setAttribute('fill', fill);
+  svg.appendChild(c);
+  return c;
+}
+function addPath(svg, d, stroke, width=2.5, fill='none') {
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', d); p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', width);
+  p.setAttribute('fill', fill);
+  p.setAttribute('stroke-linejoin', 'round');
+  p.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(p);
+  return p;
+}
+function polar(cx, cy, r, angleDeg) {
+  const a = (angleDeg - 90) * Math.PI / 180;
+  return {x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)};
+}
+function donutPath(cx, cy, rOuter, rInner, start, end) {
+  const p1 = polar(cx, cy, rOuter, end);
+  const p2 = polar(cx, cy, rOuter, start);
+  const p3 = polar(cx, cy, rInner, start);
+  const p4 = polar(cx, cy, rInner, end);
+  const large = end - start > 180 ? 1 : 0;
+  return `M ${p1.x} ${p1.y} A ${rOuter} ${rOuter} 0 ${large} 0 ${p2.x} ${p2.y} L ${p3.x} ${p3.y} A ${rInner} ${rInner} 0 ${large} 1 ${p4.x} ${p4.y} Z`;
+}
+
+function drawLineChart(svgId, seriesList, labels, yLabel='кВт') {
+  const svg = document.getElementById(svgId);
+  const {w,h} = svgSize(svg);
+  const m = {l: 52, r: 18, t: 12, b: 38};
+  const cw = w - m.l - m.r, ch = h - m.t - m.b;
+  const allY = seriesList.flatMap(s => s.data);
+  const ymax = Math.max(...allY) * 1.1;
+  const x = i => m.l + (i/(labels.length-1)) * cw;
+  const y = v => m.t + ch - (v / ymax) * ch;
+
+  for(let i=0;i<=5;i++) {
+    const yy = m.t + i*(ch/5);
+    addLine(svg, m.l, yy, m.l+cw, yy, 'rgba(255,255,255,.09)', 1, '4 6');
+    addText(svg, m.l-8, yy+4, fmt((5-i)*ymax/5, 2), {anchor:'end', size:11});
+  }
+  for(let i=0;i<labels.length;i++) {
+    const xx = x(i);
+    addLine(svg, xx, m.t+ch, xx, m.t+ch+4, 'rgba(255,255,255,.20)', 1);
+    if (i < labels.length) addText(svg, xx, h-14, labels[i], {anchor:'middle', size:10});
+  }
+  addLine(svg, m.l, m.t, m.l, m.t+ch, 'rgba(255,255,255,.18)', 1.2);
+  addLine(svg, m.l, m.t+ch, m.l+cw, m.t+ch, 'rgba(255,255,255,.18)', 1.2);
+  addText(svg, 12, m.t+16, yLabel, {size:11, weight:700});
+
+  seriesList.forEach((s) => {
+    let d = '';
+    s.data.forEach((v,i) => {
+      d += (i===0 ? 'M':'L') + x(i) + ' ' + y(v) + ' ';
+    });
+    addPath(svg, d, s.color, 3);
+    s.data.forEach((v,i) => addCircle(svg, x(i), y(v), 3.2, s.color));
+  });
+}
+
+function drawBarChart(svgId, items, opts={}) {
+  const svg = document.getElementById(svgId);
+  const {w,h} = svgSize(svg);
+  const m = {l: 120, r: 24, t: 18, b: 20};
+  const cw = w - m.l - m.r, ch = h - m.t - m.b;
+  const max = Math.max(...items.map(i => i.value)) * 1.12;
+  const rowH = ch / items.length;
+  items.forEach((it, idx) => {
+    const y = m.t + idx*rowH + rowH*0.18;
+    const bh = rowH*0.45;
+    addText(svg, 10, y+bh*0.8, it.label, {size:12});
+    addRect(svg, m.l, y, cw, bh, 'rgba(255,255,255,.06)', 12);
+    const bw = (it.value/max)*cw;
+    addRect(svg, m.l, y, bw, bh, it.color, 12);
+    addText(svg, m.l+bw+8, y+bh*0.8, (it.suffixMoney ? fmt0(it.value)+' грн' : fmt(it.value,1)+' кВт·год'), {size:12, fill:'#eef3ff'});
+  });
+}
+
+function drawGroupedBars(svgId, groups) {
+  const svg = document.getElementById(svgId);
+  const {w,h} = svgSize(svg);
+  const m = {l: 52, r: 20, t: 12, b: 50};
+  const cw = w - m.l - m.r, ch = h - m.t - m.b;
+  const all = groups.flatMap(g => g.values.map(v => v.value));
+  const max = Math.max(...all) * 1.12;
+  const xStep = cw / groups.length;
+  const barW = Math.min(46, xStep / 4);
+
+  for(let i=0;i<=5;i++) {
+    const yy = m.t + i*(ch/5);
+    addLine(svg, m.l, yy, m.l+cw, yy, 'rgba(255,255,255,.08)', 1, '4 6');
+    addText(svg, m.l-8, yy+4, fmt0((5-i)*max/5), {anchor:'end', size:11});
+  }
+  groups.forEach((g, gi) => {
+    const gx = m.l + gi*xStep + xStep/2;
+    g.values.forEach((v, vi) => {
+      const bh = (v.value/max)*ch;
+      const x = gx + (vi-0.5)*(barW+10) - barW/2;
+      const y = m.t + ch - bh;
+      addRect(svg, x, y, barW, bh, v.color, 10);
+      addText(svg, x+barW/2, y-6, fmt0(v.value), {anchor:'middle', size:10});
+    });
+    addText(svg, gx, h-22, g.label, {anchor:'middle', size:11, weight:700});
+  });
+  const legends = [
+    {label:'З утепленням', color:'#7fd1a7'},
+    {label:'Без утеплення', color:'#f6b26b'}
+  ];
+  legends.forEach((l, i) => {
+    const x = m.l + i*140;
+    addCircle(svg, x, 18, 5, l.color);
+    addText(svg, x+10, 22, l.label, {size:12});
+  });
+}
+
+function drawLossComparison(svgId) {
+  const keys = Object.keys(data.withIns.losses_kw);
+  const svg = document.getElementById(svgId);
+  const {w,h} = svgSize(svg);
+  const m = {l: 150, r: 18, t: 20, b: 24};
+  const cw = w - m.l - m.r, ch = h - m.t - m.b;
+  const max = Math.max(...keys.map(k => data.withoutIns.losses_kw[k])) * 1.08;
+  const rowH = ch / keys.length;
+  keys.forEach((k, i) => {
+    const y = m.t + i*rowH + rowH*0.18;
+    const bh = rowH*0.26;
+    const gap = rowH*0.18;
+    addText(svg, 10, y+bh+6, k, {size:12});
+    addRect(svg, m.l, y, (data.withIns.losses_kw[k]/max)*cw, bh, '#7fd1a7', 8);
+    addRect(svg, m.l, y+bh+gap, (data.withoutIns.losses_kw[k]/max)*cw, bh, '#f6b26b', 8);
+    addText(svg, m.l + (data.withIns.losses_kw[k]/max)*cw + 8, y+bh-2, fmt(data.withIns.losses_kw[k]), {size:11, fill:'#c9ffe0'});
+    addText(svg, m.l + (data.withoutIns.losses_kw[k]/max)*cw + 8, y+bh+gap+bh-2, fmt(data.withoutIns.losses_kw[k]), {size:11, fill:'#ffe0bf'});
+  });
+  addCircle(svg, m.l, 12, 5, '#7fd1a7'); addText(svg, m.l+10, 16, 'З утепленням', {size:12});
+  addCircle(svg, m.l+130, 12, 5, '#f6b26b'); addText(svg, m.l+140, 16, 'Без утеплення', {size:12});
+}
+
+function drawDonut(svgId, obj) {
+  const svg = document.getElementById(svgId);
+  const {w,h} = svgSize(svg);
+  const cx = w*0.33, cy = h*0.52;
+  const rOuter = Math.min(w,h)*0.24, rInner = rOuter*0.58;
+  const colors = ['#5ea1ff','#8ad1ff','#7fd1a7','#b48ef7','#4dd0e1','#f6b26b'];
+  const keys = Object.keys(obj);
+  const vals = keys.map(k => obj[k]);
+  const total = vals.reduce((a,b)=>a+b,0);
+  let angle = 0;
+  keys.forEach((k, i) => {
+    const part = vals[i] / total * 360;
+    const d = donutPath(cx, cy, rOuter, rInner, angle, angle + part);
+    const p = addPath(svg, d, 'rgba(255,255,255,.06)', 1, colors[i % colors.length]);
+    p.setAttribute('stroke', 'rgba(255,255,255,.06)');
+    angle += part;
+  });
+  addText(svg, cx, cy-6, 'Σ', {anchor:'middle', size:18, weight:800, fill:'#eef3ff'});
+  addText(svg, cx, cy+14, fmt(total), {anchor:'middle', size:12, weight:700, fill:'#eef3ff'});
+  keys.forEach((k, i) => {
+    const yy = 28 + i*22;
+    addCircle(svg, w*0.62, yy, 5, colors[i % colors.length]);
+    addText(svg, w*0.62+12, yy+4, `${k} — ${fmt(obj[k])}`, {size:12});
+  });
+}
+
+function drawTechCurve(svgId) {
+  drawLineChart(svgId, [
+    {data: data.techCurve.k09_12, color:'#5ea1ff'},
+    {data: data.techCurve.k18, color:'#f6b26b'},
+    {data: data.techCurve.k24, color:'#7fd1a7'},
+  ], data.techCurve.temps.map(String), '%');
+  const svg = document.getElementById(svgId);
+  const w = svg.viewBox.baseVal.width;
+  addCircle(svg, w-190, 20, 5, '#5ea1ff'); addText(svg, w-178, 24, '09/12K', {size:12});
+  addCircle(svg, w-120, 20, 5, '#f6b26b'); addText(svg, w-108, 24, '18K', {size:12});
+  addCircle(svg, w-60, 20, 5, '#7fd1a7'); addText(svg, w-48, 24, '24K', {size:12});
+}
+
+function render() {
+  renderIntervalTable('table-with', data.withIns);
+  renderIntervalTable('table-without', data.withoutIns);
+  renderLossTable();
+  renderTechSpecs();
+  renderNorms();
+
+  drawLineChart('line-with', [
+    {data: data.withIns.hourly_load_kw, color:'#7fd1a7'},
+    {data: data.hours.map(h => h/300), color:'#5ea1ff'},
+  ], data.midpoints.map(String), 'кВт');
+  drawLineChart('line-without', [
+    {data: data.withoutIns.hourly_load_kw, color:'#f6b26b'},
+    {data: data.hours.map(h => h/300), color:'#5ea1ff'},
+  ], data.midpoints.map(String), 'кВт');
+
+  drawDonut('pie-with', data.withIns.losses_kw);
+  drawDonut('pie-without', data.withoutIns.losses_kw);
+
+  drawBarChart('cost-with', [
+    {label:'Тепловий насос', value:data.withIns.season_cost_uah, color:'#7fd1a7', suffixMoney:true},
+    {label:'Електрообігрівач', value:data.withIns.electric_heater_cost_uah, color:'#5ea1ff', suffixMoney:true},
+  ]);
+  drawBarChart('cost-without', [
+    {label:'Тепловий насос', value:data.withoutIns.season_cost_uah, color:'#f6b26b', suffixMoney:true},
+    {label:'Електрообігрівач', value:data.withoutIns.electric_heater_cost_uah, color:'#5ea1ff', suffixMoney:true},
+  ]);
+
+  drawLineChart('line-compare', [
+    {data: data.withIns.hourly_load_kw, color:'#7fd1a7'},
+    {data: data.withoutIns.hourly_load_kw, color:'#f6b26b'},
+  ], data.midpoints.map(String), 'кВт');
+  const svgCmp = document.getElementById('line-compare');
+  const ww = svgCmp.viewBox.baseVal.width;
+  addCircle(svgCmp, ww-215, 18, 5, '#7fd1a7'); addText(svgCmp, ww-203, 22, 'З утепленням', {size:12});
+  addCircle(svgCmp, ww-105, 18, 5, '#f6b26b'); addText(svgCmp, ww-93, 22, 'Без утеплення', {size:12});
+
+  drawGroupedBars('bars-summary', [
+    {label:'Споживання ТН', values:[{value:data.withIns.consumed_kwh, color:'#7fd1a7'}, {value:data.withoutIns.consumed_kwh, color:'#f6b26b'}]},
+    {label:'Електрообігрівач', values:[{value:data.withIns.electric_heater_kwh, color:'#7fd1a7'}, {value:data.withoutIns.electric_heater_kwh, color:'#f6b26b'}]},
+    {label:'Вартість, грн', values:[{value:data.withIns.season_cost_uah, color:'#7fd1a7'}, {value:data.withoutIns.season_cost_uah, color:'#f6b26b'}]},
+  ]);
+
+  drawLossComparison('losses-compare');
+
+  drawLineChart('interval-energy-compare', [
+    {data: data.withIns.interval_energy_kwh, color:'#7fd1a7'},
+    {data: data.withoutIns.interval_energy_kwh, color:'#f6b26b'},
+  ], data.midpoints.map(String), 'кВт·год');
+
+  drawTechCurve('tech-curve');
+}
+
+window.addEventListener('resize', render);
+render();
+</script>
+</body>
+</html>
